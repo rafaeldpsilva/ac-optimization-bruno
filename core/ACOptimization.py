@@ -3,7 +3,7 @@ from threading import Thread
 from datetime import datetime, timedelta
 import pandas as pd
 import schedule
-
+import requests
 from model.Division import Division
 from modules import ACStatusAdapter
 from database.BuildingRepository import BuildingRepository
@@ -55,12 +55,55 @@ class ACOptimization(Thread):
 
     def send_off(self):
         print("Sending Off")
+        url = "http://homeassistant.local:8123/api/services/script/turn_off_102"
+        headers = {
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3YzZhOTQ0YjBhYmE0ZGQ0YTNlY2Q4M2RhYWRmZDY1NyIsImlhdCI6MTcxMzM1MDIyMSwiZXhwIjoyMDI4NzEwMjIxfQ.Au0zNGmNSEmpCZyIMzooQIBZNZ5npY6Cjp-m7eHN0_s",
+            "Content-Type": "application/json"
+        }
+        data = '{"entity_id": "script.turn_off_102"}'
+
+        try:
+            response = requests.post(url, headers=headers, data=data)
+            response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
+            print("Request successful!")
+            print("Response:", response.text)
+        except requests.exceptions.RequestException as e:
+            print("Request failed:", e)
+        
 
     def send_cold(self):
         print("Sending Cold")
+        url = "http://homeassistant.local:8123/api/services/script/cold_102"
+        headers = {
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3YzZhOTQ0YjBhYmE0ZGQ0YTNlY2Q4M2RhYWRmZDY1NyIsImlhdCI6MTcxMzM1MDIyMSwiZXhwIjoyMDI4NzEwMjIxfQ.Au0zNGmNSEmpCZyIMzooQIBZNZ5npY6Cjp-m7eHN0_s",
+            "Content-Type": "application/json"
+        }
+        data = '{"entity_id": "script.cold_102"}'
+
+        try:
+            response = requests.post(url, headers=headers, data=data)
+            response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
+            print("Request successful!")
+            print("Response:", response.text)
+        except requests.exceptions.RequestException as e:
+            print("Request failed:", e)
     
     def send_warm(self):
         print("Sending Warm")
+        url = "http://homeassistant.local:8123/api/services/script/warm_102"
+        headers = {
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3YzZhOTQ0YjBhYmE0ZGQ0YTNlY2Q4M2RhYWRmZDY1NyIsImlhdCI6MTcxMzM1MDIyMSwiZXhwIjoyMDI4NzEwMjIxfQ.Au0zNGmNSEmpCZyIMzooQIBZNZ5npY6Cjp-m7eHN0_s",
+            "Content-Type": "application/json"
+        }
+        data = '{"entity_id": "script.warm_102"}'
+
+        try:
+            response = requests.post(url, headers=headers, data=data)
+            response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
+            print("Request successful!")
+            print("Response:", response.text)
+        except requests.exceptions.RequestException as e:
+            print("Request failed:", e)
     
     def get_iot_readings(self):
         building_repo = BuildingRepository()
@@ -106,13 +149,11 @@ class ACOptimization(Thread):
                                                  aux.tail(1).iloc[0]['Light (%)'])
         
         if new_status == 1:
-            self.ac_status = "on-cold"
-            self.send_cold()
+            new_status = "on-cold"
         elif new_status == -1:
-            self.ac_status = "on-warm"
-            self.send_warm()
+            new_status = "on-warm"
         else:
-            self.ac_status = "off"
+            new_status = "off"
             
         if new_status != self.ac_status:
             if new_status == "on-cold":
