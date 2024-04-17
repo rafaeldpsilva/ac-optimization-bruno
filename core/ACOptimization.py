@@ -41,7 +41,7 @@ class ACOptimization(Thread):
             }
         }
         self.division = Division(div['name'], div['iots'], div['_id'], div['ac_status_configuration'])
-        self.ac_status = ""
+        self.ac_status = "off"
 
     def get_optimization(self):
         if self.ac_status != "":
@@ -113,7 +113,17 @@ class ACOptimization(Thread):
             self.send_warm()
         else:
             self.ac_status = "off"
-            self.send_off()
+            
+        if new_status != self.ac_status:
+            if new_status == "on-cold":
+                self.ac_status = new_status
+                self.send_cold()
+            elif new_status == "on-warm":
+                self.ac_status = new_status
+                self.send_warm()
+            else:
+                self.ac_status = new_status
+                self.send_off()
             
         print("AC STATUS", self.ac_status)
         return self.ac_status
