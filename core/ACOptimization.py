@@ -53,8 +53,14 @@ class ACOptimization(Thread):
     def save_optimization(self):
         pass
 
-    def send_actions(self):
-        pass
+    def send_off(self):
+        print("Sending Off")
+
+    def send_cold(self):
+        print("Sending Cold")
+    
+    def send_warm(self):
+        print("Sending Warm")
     
     def get_iot_readings(self):
         building_repo = BuildingRepository()
@@ -95,17 +101,21 @@ class ACOptimization(Thread):
         aux['Outside temperature (ºC)'] = aux['Temperature (Cº)'] - 4
 
         # Talvez calcular media
-        self.ac_status = ACStatusAdapter.predict_ac_status(aux.tail(1).iloc[0]['Outside temperature (ºC)'],
+        new_status = ACStatusAdapter.predict_ac_status(aux.tail(1).iloc[0]['Outside temperature (ºC)'],
                                                  aux.tail(1).iloc[0]['Temperature (Cº)'], aux.tail(1).iloc[0]['Heat Index (ºC)'],
                                                  aux.tail(1).iloc[0]['Light (%)'])
-        if self.ac_status == 1:
+        
+        if new_status == 1:
             self.ac_status = "on-cold"
-        elif self.ac_status == -1:
+            self.send_cold()
+        elif new_status == -1:
             self.ac_status = "on-warm"
+            self.send_warm()
         else:
             self.ac_status = "off"
+            self.send_off()
             
-        print(self.ac_status)
+        print("AC STATUS", self.ac_status)
         return self.ac_status
 
     def run(self):
