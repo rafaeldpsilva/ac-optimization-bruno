@@ -180,7 +180,7 @@ class ACOptimization(Thread):
                 self.send_warm()
             else:
                 self.ac_status = new_status
-                self.send_off()
+                self.send_cold()
             
         print("AC STATUS", self.ac_status)
         return self.ac_status
