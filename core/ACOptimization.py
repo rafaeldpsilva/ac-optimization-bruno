@@ -6,7 +6,7 @@ import csv
 import schedule
 import requests
 from model.Division import Division
-from modules import ACStatusAdapter
+from modules import ACStatusAdapter2
 from database.BuildingRepository import BuildingRepository
 
 class ACOptimization(Thread):
@@ -82,8 +82,7 @@ class ACOptimization(Thread):
             print("Request successful!")
             print("Response:", response.text)
         except requests.exceptions.RequestException as e:
-            print("Request failed:", e)
-        
+            print("Request failed:", e)  
 
     def send_cold(self):
         print("Sending Cold")
@@ -131,9 +130,7 @@ class ACOptimization(Thread):
     def predict_ac_status(self):
         iot_readings_historic = self.get_iot_readings()
         
-        considered_iots = [self.division.ac_status_configuration['outside_temperature'],
-                           self.division.ac_status_configuration['temperature'], self.division.ac_status_configuration['humidity'],
-                           self.division.ac_status_configuration['light']]
+        considered_iots = ["Lamp 1_102","Lamp 2_102","Weather","Temperature Sensor 102","Humidity Sensor 102","Light Sensor 102","Air Conditioner 102"]
         aux = pd.DataFrame()
         for i, row in iot_readings_historic.iterrows():
             new = pd.DataFrame()
@@ -146,23 +143,25 @@ class ACOptimization(Thread):
             aux = pd.concat([aux, new])
 
         aux.rename(
-            columns={self.division.ac_status_configuration['outside_temperature'] + "_temperature": 'Outside temperature (ºC)',
-                     self.division.ac_status_configuration['temperature'] + "_temperature": 'Temperature (Cº)',
-                     self.division.ac_status_configuration['humidity'] + "_humidity": 'Humidity (%)',
-                     self.division.ac_status_configuration['light'] + "_light": 'Light (%)'},
+            columns={"Weather" + "_temperature": 'Outside temperature (ºC)',
+                    "Temperature Sensor 102" + "_temperature": 'Temperature (Cº)',
+                        "Humidity Sensor 102" + "_humidity": 'Humidity (%)',
+                        "Light Sensor 102" + "_light": 'Light (%)',
+                        "Lamp 1_102_power": 'Lamp 1',
+                        "Lamp 2_102_power": 'Lamp 2'},
             inplace=True)
-
-        aux['Temperature (Cº)'] = aux['Temperature (Cº)'] / 10
-        aux['Humidity (%)'] = aux['Humidity (%)'] / 10
-        aux['Light (%)'] = aux['Light (%)'] / 10
-        aux['Heat Index (ºC)'] = ACStatusAdapter.calculate_heat_index_custom_celsius(aux['Temperature (Cº)'],
-                                                                                     aux['Humidity (%)'])
-        aux['Outside temperature (ºC)'] = aux['Temperature (Cº)'] - 4
+        aux = aux.values.tolist()
+        aux = pd.DataFrame(aux,columns=['Air Conditioner_power','Air Conditioner_voltage','Air Conditioner_current','Lamp 1','Lamp 2','Temperature (Cº)','Humidity (%)','Light (%)','Outside temperature (ºC)'])
+        aux['AC status'] = aux.apply(lambda x: 0 if x['Air Conditioner_power'] == 0 else 1, axis=1)
+        aux['Outside temperature (ºC)'] = aux.apply(lambda x: x['Outside temperature (ºC)']*10, axis=1)
+        aux['Occupation'] = aux.apply(lambda x: 0 if x['Lamp 1'] and x['Lamp 2'] == 0 else 1, axis=1)
+        aux = aux.drop(["Air Conditioner_power","Air Conditioner_voltage","Air Conditioner_current","Lamp 1","Lamp 2"], axis=1)
+        aux['Heat Index (ºC)'] = ACStatusAdapter2.calculate_heat_index_custom_celsius(aux['Temperature (Cº)'], aux['Humidity (%)'])
 
         # Talvez calcular media
-        new_status = ACStatusAdapter.predict_ac_status(aux.tail(1).iloc[0]['Outside temperature (ºC)'],
-                                                 aux.tail(1).iloc[0]['Temperature (Cº)'], aux.tail(1).iloc[0]['Heat Index (ºC)'],
-                                                 aux.tail(1).iloc[0]['Light (%)'])
+        new_status = ACStatusAdapter2.predict_ac_status(aux.tail(1).iloc[0]['Outside temperature (ºC)'],
+                                                 aux.tail(1).iloc[0]['Temperature (Cº)'], aux.tail(1).iloc[0]['Humidity (%)'],aux.tail(1).iloc[0]['Heat Index (ºC)'],
+                                                 aux.tail(1).iloc[0]['Occupation'])
         
         if new_status == 1:
             new_status = "on-cold"
