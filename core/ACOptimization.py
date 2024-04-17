@@ -42,7 +42,7 @@ class ACOptimization(Thread):
             }
         }
         self.division = Division(div['name'], div['iots'], div['_id'], div['ac_status_configuration'])
-        self.ac_status = "off"
+        self.ac_status = ""
 
     def get_optimization(self):
         if self.ac_status != "":
