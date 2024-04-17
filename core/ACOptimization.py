@@ -7,14 +7,39 @@ import schedule
 from model.Division import Division
 from modules import ACStatusAdapter
 from database.BuildingRepository import BuildingRepository
-from database.DivisionRepository import DivisionRepository
 
 class ACOptimization(Thread):
     def __init__(self):
         self.id = id
         Thread.__init__(self)
-        repo = DivisionRepository()
-        div = repo.get_division("6568ac369c7e7bc486d7d110")
+        div = {
+            "_id": {
+                "$oid": "6568ac369c7e7bc486d7d110"
+            },
+            "name": "102",
+            "iots": [
+                "Air Conditioner 102",
+                "Sockets-101-102-103",
+                "Lamp 1_102",
+                "Lamp 2_102",
+                "Movement Sensor 102_1",
+                "Movement Sensor 102_2",
+                "Movement Sensor 102_3",
+                "Door Sensor 102",
+                "CO2 Sensor 102",
+                "VOC Sensor 102",
+                "Temperature Sensor 102",
+                "Humidity Sensor 102",
+                "Light Sensor 102",
+                "Weather"
+            ],
+            "ac_status_configuration": {
+                "outside_temperature": "Weather",
+                "temperature": "Temperature Sensor 102",
+                "humidity": "Humidity Sensor 102",
+                "light": "Light Sensor 102"
+            }
+        }
         self.division = Division(div['name'], div['iots'], div['_id'], div['ac_status_configuration'])
         self.ac_status = ""
 
