@@ -2,6 +2,7 @@ import time
 from threading import Thread
 from datetime import datetime, timedelta
 import pandas as pd
+import csv
 import schedule
 import requests
 from model.Division import Division
@@ -50,8 +51,20 @@ class ACOptimization(Thread):
             self.predict_ac_status()
             return self.ac_status
 
-    def save_optimization(self):
-        pass
+    def save_optimization(self, decision):
+        now = datetime.now()
+        current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+        data = [current_time, decision]
+
+        csv_file = "decisions.csv"
+
+        try:
+            with open(csv_file, mode='a', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(data)
+            print("Decision saved to CSV successfully.")
+        except Exception as e:
+            print(f"Error saving decision to CSV: {e}")
 
     def send_off(self):
         print("Sending Off")
