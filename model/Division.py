@@ -1,8 +1,6 @@
 import pandas as pd
 
-from database.DivisionRepository import DivisionRepository
 from modules import ACStatusAdapter
-
 
 class Division:
     def __init__(self, name, iots, id="", ac_status_configuration=""):
@@ -46,11 +44,11 @@ class Division:
                                                  aux.tail(1)['Light (%)'])
 
     def save(self):
-        division_repo = DivisionRepository()
+        #division_repo = DivisionRepository()
         return division_repo.insert_division(self.name, self.iots, self.ac_status_configuration)
 
     def update(self, name, iots, ac_status_configuration):
-        division_repo = DivisionRepository()
+        #division_repo = DivisionRepository()
         division_repo.update_division(self.id, name, iots, ac_status_configuration)
 
     def configure_ac_status_model(self, ac_status_configuration):
