@@ -51,12 +51,27 @@ class ACOptimization(Thread):
             self.predict_ac_status()
             return self.ac_status
 
+    def save_state(self, decision, outside_temp, temp, humidity, heat_index, occupation):
+        now = datetime.now()
+        current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+        data = [current_time, decision, outside_temp, temp, humidity, heat_index, occupation]
+
+        csv_file = "decisions.csv"
+
+        try:
+            with open(csv_file, mode='a', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(data)
+            print("Decision saved to CSV successfully.")
+        except Exception as e:
+            print(f"Error saving decision to CSV: {e}")
+
     def save_optimization(self, decision):
         now = datetime.now()
         current_time = now.strftime("%Y-%m-%d %H:%M:%S")
         data = [current_time, decision]
 
-        csv_file = "decisions.csv"
+        csv_file = "sent_actions.csv"
 
         try:
             with open(csv_file, mode='a', newline='') as file:
@@ -180,8 +195,14 @@ class ACOptimization(Thread):
             else:
                 self.ac_status = new_status
                 self.send_off()
-            
-        print("AC STATUS", self.ac_status)
+        
+        self.save_state(self.ac_status, aux.tail(1).iloc[0]['Outside temperature (ºC)'], aux.tail(1).iloc[0]['Temperature (Cº)'], aux.tail(1).iloc[0]['Humidity (%)'],aux.tail(1).iloc[0]['Heat Index (ºC)'],aux.tail(1).iloc[0]['Occupation'])
+        print("AC STATUS", self.ac_status, 
+              "outside temp", aux.tail(1).iloc[0]['Outside temperature (ºC)'], 
+              "temp", aux.tail(1).iloc[0]['Temperature (Cº)'], 
+              "Humidity", aux.tail(1).iloc[0]['Humidity (%)'],
+              "heat index", aux.tail(1).iloc[0]['Heat Index (ºC)'],
+              "occupation", aux.tail(1).iloc[0]['Occupation'])
         return self.ac_status
 
     def run(self):
