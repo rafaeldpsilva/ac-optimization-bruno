@@ -19,9 +19,9 @@ class ACOptimization(Thread):
             },
             "name": "102",
             "iots": [
-                "Air Conditioner 102",
+                "Air Conditioner 103",
                 "Sockets-101-102-103",
-                "Lamp 1_102",
+                "Lamp 1_103",
                 "Lamp 2_102",
                 "Movement Sensor 102_1",
                 "Movement Sensor 102_2",
@@ -29,16 +29,16 @@ class ACOptimization(Thread):
                 "Door Sensor 102",
                 "CO2 Sensor 102",
                 "VOC Sensor 102",
-                "Temperature Sensor 102",
-                "Humidity Sensor 102",
-                "Light Sensor 102",
+                "Temperature Sensor 103",
+                "Humidity Sensor 103",
+                "Light Sensor 103",
                 "Weather"
             ],
             "ac_status_configuration": {
                 "outside_temperature": "Weather",
-                "temperature": "Temperature Sensor 102",
-                "humidity": "Humidity Sensor 102",
-                "light": "Light Sensor 102"
+                "temperature": "Temperature Sensor 103",
+                "humidity": "Humidity Sensor 103",
+                "light": "Light Sensor 103"
             }
         }
         self.division = Division(div['name'], div['iots'], div['_id'], div['ac_status_configuration'])
@@ -145,7 +145,7 @@ class ACOptimization(Thread):
     def predict_ac_status(self):
         iot_readings_historic = self.get_iot_readings()
         
-        considered_iots = ["Lamp 1_102","Lamp 2_102","Weather","Temperature Sensor 102","Humidity Sensor 102","Light Sensor 102","Air Conditioner 102"]
+        considered_iots = ["Lamp 1_103","Weather","Temperature Sensor 103","Humidity Sensor 103","Light Sensor 103","Air Conditioner 103"]
         aux = pd.DataFrame()
         for i, row in iot_readings_historic.iterrows():
             new = pd.DataFrame()
@@ -159,18 +159,17 @@ class ACOptimization(Thread):
 
         aux.rename(
             columns={"Weather" + "_temperature": 'Outside temperature (ºC)',
-                    "Temperature Sensor 102" + "_temperature": 'Temperature (Cº)',
-                        "Humidity Sensor 102" + "_humidity": 'Humidity (%)',
-                        "Light Sensor 102" + "_light": 'Light (%)',
-                        "Lamp 1_102_power": 'Lamp 1',
-                        "Lamp 2_102_power": 'Lamp 2'},
+                    "Temperature Sensor 103" + "_temperature": 'Temperature (Cº)',
+                        "Humidity Sensor 103" + "_humidity": 'Humidity (%)',
+                        "Light Sensor 103" + "_light": 'Light (%)',
+                        "Lamp 1_103_power": 'Lamp 1'},
             inplace=True)
         aux = aux.values.tolist()
-        aux = pd.DataFrame(aux,columns=['Air Conditioner_power','Air Conditioner_voltage','Air Conditioner_current','Lamp 1','Lamp 2','Temperature (Cº)','Humidity (%)','Light (%)','Outside temperature (ºC)'])
+        aux = pd.DataFrame(aux,columns=['Air Conditioner_power','Air Conditioner_voltage','Air Conditioner_current','Lamp 1','Temperature (Cº)','Humidity (%)','Light (%)','Outside temperature (ºC)'])
         aux['AC status'] = aux.apply(lambda x: 0 if x['Air Conditioner_power'] == 0 else 1, axis=1)
         aux['Outside temperature (ºC)'] = aux.apply(lambda x: x['Outside temperature (ºC)']*10, axis=1)
-        aux['Occupation'] = aux.apply(lambda x: 0 if x['Lamp 1'] and x['Lamp 2'] == 0 else 1, axis=1)
-        aux = aux.drop(["Air Conditioner_power","Air Conditioner_voltage","Air Conditioner_current","Lamp 1","Lamp 2"], axis=1)
+        aux['Occupation'] = aux.apply(lambda x: 0 if x['Lamp 1'] == 0 else 1, axis=1)
+        aux = aux.drop(["Air Conditioner_power","Air Conditioner_voltage","Air Conditioner_current","Lamp 1"], axis=1)
         aux['Heat Index (ºC)'] = ACStatusAdapter2.calculate_heat_index_custom_celsius(aux['Temperature (Cº)'], aux['Humidity (%)'])
 
         # Talvez calcular media
