@@ -168,7 +168,7 @@ class ACOptimization(Thread):
         aux = pd.DataFrame(aux,columns=['Air Conditioner_power','Air Conditioner_voltage','Air Conditioner_current','Lamp 1','Temperature (Cº)','Humidity (%)','Light (%)','Outside temperature (ºC)'])
         aux['AC status'] = aux.apply(lambda x: 0 if x['Air Conditioner_power'] == 0 else 1, axis=1)
         aux['Outside temperature (ºC)'] = aux.apply(lambda x: x['Outside temperature (ºC)']*10, axis=1)
-        aux['Occupation'] = aux.apply(lambda x: 0 if x['Lamp 1'] == 0 else 1, axis=1)
+        aux['Occupation'] = aux.apply(lambda x: 0 if x['Light (%)'] > 500 else 1, axis=1)
         aux = aux.drop(["Air Conditioner_power","Air Conditioner_voltage","Air Conditioner_current","Lamp 1"], axis=1)
         aux['Heat Index (ºC)'] = ACStatusAdapter2.calculate_heat_index_custom_celsius(aux['Temperature (Cº)'], aux['Humidity (%)'])
 
