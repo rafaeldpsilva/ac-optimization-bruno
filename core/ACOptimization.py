@@ -212,7 +212,7 @@ class ACOptimization(Thread):
         #        set_right_time = False
         #    time.sleep(1)
 
-        schedule.every(15).minutes.do(self.predict_ac_status)
+        schedule.every(5).minutes.do(self.predict_ac_status)
         #schedule.every(2).minutes.do(self.send_actions)
 
         self.predict_ac_status()
