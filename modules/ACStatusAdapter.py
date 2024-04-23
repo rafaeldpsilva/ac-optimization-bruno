@@ -27,7 +27,7 @@ def calculate_heat_index_custom_celsius(temperature, relative_humidity):
             + c8 * temperature * relative_humidity * relative_humidity
             + c9 * temperature * temperature * relative_humidity * relative_humidity
     )
-    return HI * 10
+    return round(HI* 10, 2)
 
 
 def predict_ac_status(outside_temp, temperature, heat_index, light):
