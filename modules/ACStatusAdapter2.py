@@ -2,6 +2,10 @@ import pickle
 
 
 def calculate_heat_index_custom_celsius(temperature, relative_humidity):
+    
+    temperature = temperature / 10 
+    relative_humidity = relative_humidity / 1000
+    
     c1 = -8.785
     c2 = 1.611
     c3 = 2.339
@@ -23,7 +27,7 @@ def calculate_heat_index_custom_celsius(temperature, relative_humidity):
             + c8 * temperature * relative_humidity * relative_humidity
             + c9 * temperature * temperature * relative_humidity * relative_humidity
     )
-    return HI
+    return HI * 10
 
 
 def predict_ac_status(outside_temp, temperature, humidity, heat_index, occupation):
