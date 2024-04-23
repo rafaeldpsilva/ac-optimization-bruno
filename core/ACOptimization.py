@@ -137,7 +137,7 @@ class ACOptimization(Thread):
     
     def get_iot_readings(self):
         building_repo = BuildingRepository()
-        iots = building_repo.get_historic_iots(datetime.now() - timedelta(hours=1))
+        iots = building_repo.get_historic_iots(datetime.now() - timedelta(minutes=5))
         iot_readings_historic = pd.DataFrame(iots)
         iot_readings_historic = iot_readings_historic.drop("_id", axis=1)
         return iot_readings_historic
@@ -145,7 +145,7 @@ class ACOptimization(Thread):
     def predict_ac_status(self):
         iot_readings_historic = self.get_iot_readings()
         
-        considered_iots = ["Lamp 1_103","Weather","Temperature Sensor 103","Humidity Sensor 103","Light Sensor 103","Air Conditioner 103"]
+        considered_iots = ["Weather","Temperature Sensor 103","Humidity Sensor 103","Light Sensor 103","Air Conditioner 103"]
         aux = pd.DataFrame()
         for i, row in iot_readings_historic.iterrows():
             new = pd.DataFrame()
@@ -161,15 +161,14 @@ class ACOptimization(Thread):
             columns={"Weather" + "_temperature": 'Outside temperature (ºC)',
                     "Temperature Sensor 103" + "_temperature": 'Temperature (Cº)',
                         "Humidity Sensor 103" + "_humidity": 'Humidity (%)',
-                        "Light Sensor 103" + "_light": 'Light (%)',
-                        "Lamp 1_103_power": 'Lamp 1'},
+                        "Light Sensor 103" + "_light": 'Light (%)'},
             inplace=True)
         aux = aux.values.tolist()
-        aux = pd.DataFrame(aux,columns=['Air Conditioner_power','Air Conditioner_voltage','Air Conditioner_current','Lamp 1','Temperature (Cº)','Humidity (%)','Light (%)','Outside temperature (ºC)'])
+        aux = pd.DataFrame(aux,columns=['Air Conditioner_power','Air Conditioner_voltage','Air Conditioner_current','Temperature (Cº)','Humidity (%)','Light (%)','Outside temperature (ºC)'])
         aux['AC status'] = aux.apply(lambda x: 0 if x['Air Conditioner_power'] == 0 else 1, axis=1)
         aux['Outside temperature (ºC)'] = aux.apply(lambda x: x['Outside temperature (ºC)']*10, axis=1)
         aux['Occupation'] = aux.apply(lambda x: 0 if x['Light (%)'] < 500 else 1, axis=1)
-        aux = aux.drop(["Air Conditioner_power","Air Conditioner_voltage","Air Conditioner_current","Lamp 1"], axis=1)
+        aux = aux.drop(["Air Conditioner_power","Air Conditioner_voltage","Air Conditioner_current"], axis=1)
         aux['Heat Index (ºC)'] = ACStatusAdapter2.calculate_heat_index_custom_celsius(aux['Temperature (Cº)'], aux['Humidity (%)'])
 
         # Talvez calcular media
