@@ -6,7 +6,7 @@ import csv
 import schedule
 import requests
 from model.Division import Division
-from modules import ACStatusAdapter2
+from modules import ACStatusAdapterSVM
 from database.BuildingRepository import BuildingRepository
 
 class ACOptimization(Thread):
@@ -169,10 +169,10 @@ class ACOptimization(Thread):
         aux['Outside temperature (ºC)'] = aux.apply(lambda x: x['Outside temperature (ºC)']*10, axis=1)
         aux['Occupation'] = aux.apply(lambda x: 0 if x['Light (%)'] < 500 else 1, axis=1)
         aux = aux.drop(["Air Conditioner_power","Air Conditioner_voltage","Air Conditioner_current"], axis=1)
-        aux['Heat Index (ºC)'] = ACStatusAdapter2.calculate_heat_index_custom_celsius(aux['Temperature (Cº)'], aux['Humidity (%)'])
+        aux['Heat Index (ºC)'] = ACStatusAdapterSVM.calculate_heat_index_custom_celsius(aux['Temperature (Cº)'], aux['Humidity (%)'])
 
         # Talvez calcular media
-        new_status = ACStatusAdapter2.predict_ac_status(aux.head(1).iloc[0]['Outside temperature (ºC)'],
+        new_status = ACStatusAdapterSVM.predict_ac_status(aux.head(1).iloc[0]['Outside temperature (ºC)'],
                                                  aux.head(1).iloc[0]['Temperature (Cº)'], aux.head(1).iloc[0]['Humidity (%)'],aux.head(1).iloc[0]['Heat Index (ºC)'],
                                                  aux.head(1).iloc[0]['Occupation'])
         
