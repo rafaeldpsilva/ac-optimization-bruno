@@ -39,12 +39,12 @@ def predict_ac_status(outside_temp, temperature, humidity, heat_index, occupatio
     occupation = int(occupation)
 
     # Load the model from the file
-    model_filename = './modules/ACStatus/svm_model.pkl'
+    model_filename = './modules/ACStatus/svm_model2.pkl'
     with open(model_filename, 'rb') as model_file:
         svm_model = pickle.load(model_file)
         
     # Load the model from the file
-    model_filename = './modules/ACStatus/scaler.pkl'
+    model_filename = './modules/ACStatus/scaler2.pkl'
     with open(model_filename, 'rb') as model_file:
         scaler = pickle.load(model_file)
 
