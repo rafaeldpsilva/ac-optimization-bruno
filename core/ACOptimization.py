@@ -194,13 +194,13 @@ class ACOptimization(Thread):
                 self.ac_status = new_status
                 self.send_off()
         
-        self.save_state(self.ac_status, aux.tail(1).iloc[0]['Outside temperature (ºC)'], aux.tail(1).iloc[0]['Temperature (Cº)'], aux.tail(1).iloc[0]['Humidity (%)'],aux.tail(1).iloc[0]['Heat Index (ºC)'],aux.tail(1).iloc[0]['Occupation'])
+        self.save_state(self.ac_status, aux.head(1).iloc[0]['Outside temperature (ºC)'], aux.head(1).iloc[0]['Temperature (Cº)'], aux.head(1).iloc[0]['Humidity (%)'],aux.head(1).iloc[0]['Heat Index (ºC)'],aux.head(1).iloc[0]['Occupation'])
         print("AC STATUS", self.ac_status, 
-              "outside temp", aux.tail(1).iloc[0]['Outside temperature (ºC)'], 
-              "temp", aux.tail(1).iloc[0]['Temperature (Cº)'], 
-              "Humidity", aux.tail(1).iloc[0]['Humidity (%)'],
-              "heat index", aux.tail(1).iloc[0]['Heat Index (ºC)'],
-              "occupation", aux.tail(1).iloc[0]['Occupation'])
+              "outside temp", aux.head(1).iloc[0]['Outside temperature (ºC)'], 
+              "temp", aux.head(1).iloc[0]['Temperature (Cº)'], 
+              "Humidity", aux.head(1).iloc[0]['Humidity (%)'],
+              "heat index", aux.head(1).iloc[0]['Heat Index (ºC)'],
+              "occupation", aux.head(1).iloc[0]['Occupation'])
         return self.ac_status
 
     def run(self):
