@@ -191,8 +191,7 @@ class ACOptimization(Thread):
                 self.send_warm()
             else:
                 self.ac_status = new_status
-                self.send_cold()
-                #self.send_off()
+                self.send_off()
         
         self.save_state(self.ac_status, aux.head(1).iloc[0]['Outside temperature (ºC)'], aux.head(1).iloc[0]['Temperature (Cº)'], aux.head(1).iloc[0]['Humidity (%)'],aux.head(1).iloc[0]['Heat Index (ºC)'],aux.head(1).iloc[0]['Occupation'])
         print("AC STATUS", self.ac_status, 
