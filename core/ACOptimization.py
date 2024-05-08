@@ -84,12 +84,12 @@ class ACOptimization(Thread):
     def send_off(self):
         print("Sending Off")
         self.save_optimization("off")
-        url = "http://homeassistant.local:8123/api/services/script/turn_off_102"
+        url = "http://homeassistant.local:8123/api/services/script/send_off"
         headers = {
             "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3YzZhOTQ0YjBhYmE0ZGQ0YTNlY2Q4M2RhYWRmZDY1NyIsImlhdCI6MTcxMzM1MDIyMSwiZXhwIjoyMDI4NzEwMjIxfQ.Au0zNGmNSEmpCZyIMzooQIBZNZ5npY6Cjp-m7eHN0_s",
             "Content-Type": "application/json"
         }
-        data = '{"entity_id": "script.turn_off_102"}'
+        data = '{"entity_id": "script.send_off"}'
 
         try:
             response = requests.post(url, headers=headers, data=data)
@@ -102,12 +102,12 @@ class ACOptimization(Thread):
     def send_cold(self):
         print("Sending Cold")
         self.save_optimization("cold")
-        url = "http://homeassistant.local:8123/api/services/script/cold_102"
+        url = "http://homeassistant.local:8123/api/services/script/send_cold"
         headers = {
             "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3YzZhOTQ0YjBhYmE0ZGQ0YTNlY2Q4M2RhYWRmZDY1NyIsImlhdCI6MTcxMzM1MDIyMSwiZXhwIjoyMDI4NzEwMjIxfQ.Au0zNGmNSEmpCZyIMzooQIBZNZ5npY6Cjp-m7eHN0_s",
             "Content-Type": "application/json"
         }
-        data = '{"entity_id": "script.cold_102"}'
+        data = '{"entity_id": "script.send_cold"}'
 
         try:
             response = requests.post(url, headers=headers, data=data)
@@ -120,12 +120,12 @@ class ACOptimization(Thread):
     def send_warm(self):
         print("Sending Warm")
         self.save_optimization("warm")
-        url = "http://homeassistant.local:8123/api/services/script/warm_102"
+        url = "http://homeassistant.local:8123/api/services/script/send_warm"
         headers = {
             "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3YzZhOTQ0YjBhYmE0ZGQ0YTNlY2Q4M2RhYWRmZDY1NyIsImlhdCI6MTcxMzM1MDIyMSwiZXhwIjoyMDI4NzEwMjIxfQ.Au0zNGmNSEmpCZyIMzooQIBZNZ5npY6Cjp-m7eHN0_s",
             "Content-Type": "application/json"
         }
-        data = '{"entity_id": "script.warm_102"}'
+        data = '{"entity_id": "script.send_warm"}'
 
         try:
             response = requests.post(url, headers=headers, data=data)
@@ -157,8 +157,7 @@ class ACOptimization(Thread):
 
             aux = pd.concat([aux, new])
 
-        aux.rename(
-            columns={"Weather" + "_temperature": 'Outside temperature (ºC)',
+        aux.rename(columns={"Weather" + "_temperature": 'Outside temperature (ºC)',
                     "Temperature Sensor 103" + "_temperature": 'Temperature (Cº)',
                         "Humidity Sensor 103" + "_humidity": 'Humidity (%)',
                         "Light Sensor 103" + "_light": 'Light (%)'},
