@@ -1,6 +1,3 @@
-import pandas as pd
-
-from modules import ACStatusAdapter
 
 class Division:
     def __init__(self, name, iots, id="", ac_status_configuration=""):
