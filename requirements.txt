@@ -3,5 +3,4 @@ Flask-Cors==3.0.10
 PyJWT==2.7.0
 pymongo==4.3.3
 requests
-colorama
 matplotlib
